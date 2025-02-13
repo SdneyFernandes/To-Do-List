@@ -1,6 +1,8 @@
 package br.com.todoList.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,28 +18,27 @@ import br.com.todoList.enums. *;
 
 public interface TaskRepository extends JpaRepository<Task, Long>{
 	
-	//Retorna todas as tarefas associadas a um usuario especifico
-	//O Spring Data JPA interpreta esse nome(user) e gera automaticamente a consulta SQL
-	List<Task> buscarPorUsuario(User user);
-	
-	//Recebe um status como paramentro e retorna todas as tarefas com esse status
-	List<Task> buscarPorStatus(StatusTask status);
-	
-	//Retorna as tarefas com prazo expirado
-	//O metodo verifica a data limite(deadline), O Spring Data JPA gera a query WHERE deadline<data> 
-	List<Task> buscarPorPrazoExpirado(LocalDate data);
-	
-	//Retorna as tarefas ordenadas da mais alta a mais baixa prioridade
-	List<Task> buscarPorPrioridade();
-	
-	//primeiro filtra pelo ststaus depois ordena por prioridade
-	List<Task> buscarPorStatusFiltrarPorPrioridade(StatusTask status);
-	
-	//Filtra por usuario e depois pelo status
-	List<Task> buscarPorUsuarioEStatus(User user, StatusTask status);
-	
-	
+	// Buscar tarefas por usuário
+    @Query("SELECT t FROM Task t WHERE t.user = :user")
+    List<Task> buscarPorUsuario(@Param("user") User user);
 
+    // Buscar tarefas por status
+    @Query("SELECT t FROM Task t WHERE t.status = :status")
+    List<Task> buscarPorStatus(@Param("status") StatusTask status);
+
+    // Buscar tarefas com prazo expirado
+    @Query("SELECT t FROM Task t WHERE t.deadline < :data")
+    List<Task> buscarPorPrazoExpirado(@Param("data") LocalDate data);
+
+    // Buscar tarefas ordenadas por prioridade (maior para menor)
+    @Query("SELECT t FROM Task t ORDER BY t.priority DESC")
+    List<Task> buscarPorPrioridade();
+
+    // Buscar tarefas por status e ordenar por prioridade
+    @Query("SELECT t FROM Task t WHERE t.status = :status ORDER BY t.priority DESC")
+    List<Task> buscarPorStatusFiltrarPorPrioridade(@Param("status") StatusTask status);
+
+    // Buscar tarefas por usuário e status
+    @Query("SELECT t FROM Task t WHERE t.user = :user AND t.status = :status")
+    List<Task> buscarPorUsuarioEStatus(@Param("user") User user, @Param("status") StatusTask status);
 }
-
-

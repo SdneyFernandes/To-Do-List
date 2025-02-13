@@ -20,80 +20,63 @@ public class TaskController {
 	@Autowired
 	private TaskService taskService;
 	
-	@PostMapping
-	public Task novaTarefa(@RequestBody Task task) {
-		return taskService.criarTarefa(task);
-	}
-	
-	@GetMapping
-	public List<Task> listarTarefasPorUsuario(@RequestParam(required = false) Long userId) {
-		if (userId != null) {
-			User user = new User();
-			user.setId(userId);
-			return taskService.buscarTarefasPorUsuario(user);
-		}
-		return taskService.buscarTarefasPorPrioridade();
-	}
-	
-	@GetMapping("/{id}")
-	public Task encontrarTarefaPorId(@PathVariable Long id) {
-		return taskService.buscarTarefaPorId(id);
-		
-	}
-	
-	@PutMapping("/{id}")
-	public Task atualizarTarefaPorId(@PathVariable Long id, @RequestBody Task task) {
-		return taskService.atualizarTarefa(id,  task);
-	}
-	
-	@DeleteMapping("/{id}")
-	public void deletarTarefaPorId(@PathVariable Long id) {
-		taskService.deletarTarefa(id);
-	}
-	
-	@GetMapping("/filter/status")
-	public List<Task> filtrarTarefasPorStatus(@RequestParam StatusTask status) {
-		return taskService.buscarTarefaPorStatus(status);
-	}
-	
-	@GetMapping("/filter/expired")
-	public List<Task> filtrarTarefasPorPrazo() {
-		return taskService.buscarTarefasExpiradas();
-	}
-	
-	@GetMapping("/filter/priority")
-	public List<Task> filtrarTarefasPorPrioridade() {
-		return taskService.buscarTarefasPorPrioridade();
-	}
-	
-	@GetMapping("/filter/status-priority")
-	public List<Task> filtrarTarefasPorStatusEPrioridade(@RequestParam StatusTask status) {
-		return taskService.buscarTarefaPorStatusFiltrar(status);
-	}
-	
-	@GetMapping("/filter/user-status")
-	public List<Task> filtrarTarefasPorUsuarioEStatus(@RequestParam Long userId, @RequestParam statusTask status) {
-		User user = new User();
-		user.serId(userId);
-		return taskService.buscarTarefaPorUsuarioStatus(user,  status);
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	// ✅ Criar uma tarefa associada a um usuário
+    @PostMapping
+    public Task criarTarefa(@RequestBody Task task, @RequestParam Long userId) {
+        return taskService.criarTarefa(task, userId);
+    }
+
+    // ✅ Listar todas as tarefas de um usuário
+    @GetMapping
+    public List<Task> buscarTarefasPorUsuario(@RequestParam Long userId) {
+        return taskService.buscarTarefasPorUsuario(userId);
+    }
+
+    // ✅ Buscar uma tarefa por ID
+    @GetMapping("/{id}")
+    public Task buscarTarefaPorId(@PathVariable Long id) {
+        return taskService.buscarTarefaPorId(id);
+    }
+
+    // ✅ Atualizar uma tarefa (requer um usuário válido)
+    @PutMapping("/{id}")
+    public Task atualizarTarefa(@PathVariable Long id, @RequestBody Task task, @RequestParam Long userId) {
+        return taskService.atualizarTarefa(id, task, userId);
+    }
+
+    // ✅ Excluir uma tarefa
+    @DeleteMapping("/{id}")
+    public void deletarTarefa(@PathVariable Long id) {
+        taskService.deletarTarefa(id);
+    }
+
+    // ✅ Filtrar por status
+    @GetMapping("/status")
+    public List<Task> buscarTarefaPorStatus(@RequestParam StatusTask status) {
+        return taskService.buscarTarefaPorStatus(status);
+    }
+
+    // ✅ Filtrar tarefas com prazo expirado
+    @GetMapping("/expiradas")
+    public List<Task> buscarTarefasExpiradas() {
+        return taskService.buscarTarefasExpiradas();
+    }
+
+    // ✅ Ordenar por prioridade
+    @GetMapping("/prioridade")
+    public List<Task> buscarTarefasPorPrioridade() {
+        return taskService.buscarTarefasPorPrioridade();
+    }
+
+    // ✅ Filtrar por status e ordenar por prioridade
+    @GetMapping("/status-prioridade")
+    public List<Task> buscarTarefaPorStatusFiltrar(@RequestParam StatusTask status) {
+        return taskService.buscarTarefaPorStatusFiltrar(status);
+    }
+
+    // ✅ Filtrar por usuário e status
+    @GetMapping("/usuario-status")
+    public List<Task> buscarTarefaPorUsuarioStatus(@RequestParam Long userId, @RequestParam StatusTask status) {
+        return taskService.buscarTarefaPorUsuarioStatus(userId, status);
+    }
 }

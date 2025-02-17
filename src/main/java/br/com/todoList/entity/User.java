@@ -3,6 +3,7 @@ package br.com.todoList.entity;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,5 +35,6 @@ public class User {
 	    private String password;
 
 	    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-	    private List<Task> tasks;
+	    @JsonManagedReference//evitar loop recursivo de chamadas
+	     private List<Task> tasks;
 }

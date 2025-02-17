@@ -1,13 +1,14 @@
 package br.com.todoList.controller;
 
-import org.springframework.web.bind.annotation. *;
-
+import org.springframework.web.bind.annotation.*;
+import org.slf4j.*;
 import br.com.todoList.service.TaskService;
-import br.com.todoList.entity.*;
-import br.com.todoList.enums.*;
+import br.com.todoList.entity.Task;
+import br.com.todoList.enums. *;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
+
 
 /**
  * @author fsdney
@@ -16,67 +17,87 @@ import org.springframework.beans.factory.annotation.Autowired;
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
-	 
-	@Autowired
-	private TaskService taskService;
 	
-	// ✅ Criar uma tarefa associada a um usuário
+	private final Logger logger = LoggerFactory.getLogger(TaskController.class);
+    
+    @Autowired
+    private TaskService taskService;
+
+
     @PostMapping
-    public Task criarTarefa(@RequestBody Task task, @RequestParam Long userId) {
-        return taskService.criarTarefa(task, userId);
+    public ResponseEntity<Task> criarTarefa(@RequestBody Task task, @RequestParam Long userId) {
+        Task tarefaCriada = taskService.criarTarefa(task, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(tarefaCriada);
     }
 
-    // ✅ Listar todas as tarefas de um usuário
+    
     @GetMapping
-    public List<Task> buscarTarefasPorUsuario(@RequestParam Long userId) {
-        return taskService.buscarTarefasPorUsuario(userId);
+    public ResponseEntity<List<Task>> buscarTarefasPorUsuario(@RequestParam Long userId) {
+    	logger.info("Recebida requisição para buscar tarefas Por usuario ");
+    	List<Task> tarefas = taskService.buscarTarefasPorUsuario(userId);
+        return ResponseEntity.ok(tarefas);
     }
 
-    // ✅ Buscar uma tarefa por ID
+    
     @GetMapping("/{id}")
-    public Task buscarTarefaPorId(@PathVariable Long id) {
-        return taskService.buscarTarefaPorId(id);
+    public ResponseEntity<Task> buscarTarefaPorId(@PathVariable Long id) {
+    	logger.info("Recebida requisição para buscar tarefas por id");
+    	Task tarefaOpt = taskService.buscarTarefaPorId(id);
+    	return ResponseEntity.ok(tarefaOpt);
     }
 
-    // ✅ Atualizar uma tarefa (requer um usuário válido)
+    
     @PutMapping("/{id}")
-    public Task atualizarTarefa(@PathVariable Long id, @RequestBody Task task, @RequestParam Long userId) {
-        return taskService.atualizarTarefa(id, task, userId);
+    public ResponseEntity<Task> atualizarTarefa(@PathVariable Long id, @RequestBody Task task, @RequestParam Long userId) {
+    	logger.info("Recebida requisição para atualizar as informações de uma tarefa");
+    	Task tarefaAtualizada = taskService.atualizarTarefa(id, task, userId);
+    	return ResponseEntity.ok(tarefaAtualizada);
     }
 
-    // ✅ Excluir uma tarefa
+    
     @DeleteMapping("/{id}")
-    public void deletarTarefa(@PathVariable Long id) {
-        taskService.deletarTarefa(id);
+    public ResponseEntity<Void> deletarTarefa(@PathVariable Long id) {
+    	logger.info("Recebida requisição para deletar tarefa");
+    	taskService.deletarTarefa(id);
+    	return ResponseEntity.noContent().build();
     }
 
-    // ✅ Filtrar por status
+ 
     @GetMapping("/status")
-    public List<Task> buscarTarefaPorStatus(@RequestParam StatusTask status) {
-        return taskService.buscarTarefaPorStatus(status);
+    public ResponseEntity<List<Task>> buscarTarefaPorStatus(@RequestParam StatusTask status) {
+    	logger.info("Recebida requisição para buscar tarefa por status");
+    	List<Task> buscarPorStatus = taskService.buscarTarefaPorStatus(status);
+    	return ResponseEntity.ok(buscarPorStatus);
     }
 
-    // ✅ Filtrar tarefas com prazo expirado
+    
     @GetMapping("/expiradas")
-    public List<Task> buscarTarefasExpiradas() {
-        return taskService.buscarTarefasExpiradas();
+    public ResponseEntity<List<Task>> buscarTarefasExpiradas() {
+    	logger.info("Recebida requisição para buscar tarefas com prazo expirado");
+    	List<Task> buscarExpiradas = taskService.buscarTarefasExpiradas();
+    	return ResponseEntity.ok(buscarExpiradas);
     }
 
-    // ✅ Ordenar por prioridade
     @GetMapping("/prioridade")
-    public List<Task> buscarTarefasPorPrioridade() {
-        return taskService.buscarTarefasPorPrioridade();
+    public ResponseEntity<List<Task>> buscarTarefasPorPrioridade(@RequestParam PriorityTask priority) {
+    	logger.info("Recebida requisição para buscar tarefas por prioridade");
+    	List<Task> buscarPorPrioridade = taskService.buscarTarefasPorPrioridade(priority);
+    	return ResponseEntity.ok(buscarPorPrioridade);
     }
 
-    // ✅ Filtrar por status e ordenar por prioridade
+    
     @GetMapping("/status-prioridade")
-    public List<Task> buscarTarefaPorStatusFiltrar(@RequestParam StatusTask status) {
-        return taskService.buscarTarefaPorStatusFiltrar(status);
+    public ResponseEntity<List<Task>> buscarTarefaPorStatusFiltrar(@RequestParam StatusTask status, @RequestParam PriorityTask priority) {
+    	logger.info("Recebida requisição para buscar tarefa por status e filtrar por prioridade");
+        List<Task> buscarPorStatusFiltrarPrioridade = taskService.buscarTarefaPorStatusFiltrar(status, priority);
+        return ResponseEntity.ok(buscarPorStatusFiltrarPrioridade);
     }
 
-    // ✅ Filtrar por usuário e status
+   
     @GetMapping("/usuario-status")
-    public List<Task> buscarTarefaPorUsuarioStatus(@RequestParam Long userId, @RequestParam StatusTask status) {
-        return taskService.buscarTarefaPorUsuarioStatus(userId, status);
+    public ResponseEntity<List<Task>> buscarTarefaPorUsuarioStatus(@RequestParam Long userId, @RequestParam StatusTask status) {
+    	logger.info("Recebida requisição para buscar tarefa por usuario filtrar por status");
+        List<Task> buscarPorUsuarioFiltrarStatus = taskService.buscarTarefaPorUsuarioStatus(userId, status);
+        return ResponseEntity.ok(buscarPorUsuarioFiltrarStatus);
     }
 }

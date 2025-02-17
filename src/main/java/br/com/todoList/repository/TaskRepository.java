@@ -30,13 +30,18 @@ public interface TaskRepository extends JpaRepository<Task, Long>{
     @Query("SELECT t FROM Task t WHERE t.deadline < :data")
     List<Task> buscarPorPrazoExpirado(@Param("data") LocalDate data);
 
-    // Buscar tarefas ordenadas por prioridade (maior para menor)
+    /* Buscar tarefas ordenadas por prioridade (maior para menor)
     @Query("SELECT t FROM Task t ORDER BY t.priority DESC")
-    List<Task> buscarPorPrioridade();
+    List<Task> buscarPorPrioridade(@Param("priority") PriorityTask priority);*/
+    
+    // Buscar tarefas por prioridade específica
+    //Acho mais pratico que busque por prioridade especifica, pensando em um usuario que tenha muitas tarfas cadastradas
+    @Query("SELECT t FROM Task t WHERE t.priority = :priority")
+    List<Task> buscarPorPrioridadeEspecifica(@Param("priority") PriorityTask priority);
 
     // Buscar tarefas por status e ordenar por prioridade
-    @Query("SELECT t FROM Task t WHERE t.status = :status ORDER BY t.priority DESC")
-    List<Task> buscarPorStatusFiltrarPorPrioridade(@Param("status") StatusTask status);
+    @Query("SELECT t FROM Task t WHERE t.status = :status AND t.priority = :priority")
+    List<Task> buscarPorStatusFiltrarPorPrioridade(@Param("status") StatusTask status, @Param("priority") PriorityTask priority);
 
     // Buscar tarefas por usuário e status
     @Query("SELECT t FROM Task t WHERE t.user = :user AND t.status = :status")

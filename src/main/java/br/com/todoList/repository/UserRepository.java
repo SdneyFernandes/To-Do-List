@@ -1,6 +1,10 @@
 package br.com.todoList.repository;
 
+
 import br.com.todoList.entity.User;
+
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 /**
@@ -8,5 +12,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
  */
 
 public interface UserRepository extends JpaRepository<User, Long> {
-
+	Optional<User> findByName(String name);
 }

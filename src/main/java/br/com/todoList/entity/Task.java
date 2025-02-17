@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import br.com.todoList.enums.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,7 +33,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class Task {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
 	@Column( nullable = false)
@@ -54,5 +55,6 @@ public class Task {
 	
 	@ManyToOne
 	@JoinColumn(name = "user_id", nullable = false)
+	@JsonBackReference// evitar loop recursivo de chamadas
 	private User user;
 }
